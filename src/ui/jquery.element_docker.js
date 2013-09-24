@@ -11,15 +11,15 @@
  *  <div class="blurbTitle">Details</div>
  *  <div class="p">
  *   -how is works
- *    $("#header").scroll_control();
- *    The scroll_controlled will scroll normally at which time they will be absolutely positioned, 
+ *    $("#header").element_docker();
+ *    The element_dockerled will scroll normally at which time they will be absolutely positioned, 
  *    with the inverse treatment of scrolling the other way. Once the scroll positioned is reached, a fade of optional opacity can be applied.
  *    <span data-todo="check sticky logic">(TODO) Check on the Sticky page documentation to see what the plugin does to the DOM.</span>
  *  </div>
  *  <div class="subHeader"><span>Options</span></div>
  *  <div class="p">
  *   <ul> 
- *    <li> pin_target: (bind scroll event to the pin target, but the defaut is the window) select the containing element to pin the scroll_controlled element to. Default value: body</li>
+ *    <li> pin_target: (bind scroll event to the pin target, but the defaut is the window) select the containing element to pin the element_dockerled element to. Default value: body</li>
  *    <li> piadding_top: Accepts any CSS length value to indiciate padding from the top of the containing element. Default value: 0px </li>
  *    <li> fade_min: Minimum fade opacity as an decimal value between zero and one. Default value: 0.35 </li>
  *    <li> fade_travel: Fade rate is controlled by specifying the travel of element faded in pixels. Default value: 250</li>
@@ -45,70 +45,56 @@
    * The <a href="/documentation/kibbles/ref/Widget_Reference#canvas-container">
    * canvas container</a> and primary template. Brief description.
    */
-   ich.addTemplate('scroll_control', '<div class="scroll-control"></div>');
+   ich.addTemplate('element_docker', '<div class="element-docker"></div>');
 
    var methods = {
     init : function(options) {
       return this.each(function() {
         var $this = $(this);
+        var settings = $.extend({
+           fadeStart: 0,
+           fadeUntil: 250,
+           pop_opacity: 1,
+           min_opacity: 0.35,
+           topSpacing: 0,
+           bottomSpacing: 0 
+        }, options);
+
+        //if (!$this.data('element_docker'))
+          $this.data('element_docker', settings);
+          // alert($this.data('element_docker') + $this.data('element_docker').fadeStart);
         instances.push($this);
+        //alert("instances.length: " + instances.length);
 
-    $(window).bind('scroll', function($this){
+    $(window).bind('scroll', (function($this){
       return function() {
-        var fadeStart = (! options || ! options.fadeStart ? 0 : options.fadeStart);
-        var fadeUntil = (! options || ! options.fadeUntil ? 250 : options.fadeUntil);
-        var offset = $(this).scrollTop();
-        var opacity = (! options || ! options.opacity ? 0: options.opacity);
-        var pop_opacity = (! options || ! options.pop_opacity ? 1 : options.pop_opacity);
-        var min_opacity = (! options || ! options.min_opacity ? 0.35 : options.min_opacity);
-        var topSpacing = (! options || ! options.topSpacing ? 0 : options.topSpacing);
-        var bottomSpacing = (! options || ! options.bottomSpacing ? 0 : options.bottomSpacing); 
-
-        if( offset<=fadeStart ){
-          opacity=1;
-          } 
-        else if ( offset<=fadeUntil ){
-          opacity= 1-offset/fadeUntil;
-          } 
-        else if ( offset === fadeUntil ){
-          opacity= 1 - (offset/fadeUntil) * (1 - min_opacity);
-          } 
-        else {
-          opacity= min_opacity;
-          }
-
-        $this.css('opacity',opacity);
+        $this.css('opacity', determine_opacity.call($this));
        };
-    }($this));
+    })($this));
 
-   $this.bind('mouseenter', function(){
-      var opacity=1;
-      count = count +1;
-      //since there are possibly multiple elements on the page having scroll_control applied, 
-      //we want to fade as a group.
-      if (count == 1){
-        for (var i = 0; i < instances.length; i += 1)
-        instances[i].css("opacity", opacity);
-      }
-    });
-
-   $this.bind('mouseleave', function(){
-        var opacity = function(){
-       if (fadeStart == 0){
-          return 1;
-        } 
-       else if (fadeStart >= 1){
-         return 0.35;
-       }
+   $this.bind('mouseenter', (function($this){
+      return function() {
+        count = count +1;
+        //since there are possibly multiple elements on the page having element_docker applied, 
+        //we want to fade as a group.
+        if (count == 1){
+          // alert("foo; " + instances[0].data('element_docker'));
+          for (var i = 0; i < instances.length; i += 1)
+         instances[i].css("opacity", 1);
+        }
       };
-      count = count -1;
-      //see mouseenter comment above. 
-      if (count == 0){
-        for (var i = 0; i < instances.length; i += 1)
-        //instances[i].css("opacity", opacity());
-        instances[i].css("opacity", opacity());
-      }
-  });
+    })($this));
+
+   $this.bind('mouseleave', (function($this){
+      return function() {
+        count = count -1;
+        //see mouseenter comment above. 
+        if (count == 0){
+          for (var i = 0; i < instances.length; i += 1)
+          instances[i].css("opacity", determine_opacity.call(instances[i]));
+        }
+    };
+  })($this));
 
     $this.sticky(options);
 
@@ -126,7 +112,9 @@
 
     destroy : function() {
       return this.each(function() {
+        var $this = $(this);
         // clean up data as necessary
+        $this.removeData('element_docker');
         // clean up event bindings as necessary
       });
     }//,
@@ -136,18 +124,34 @@
     // themselves using the same infrastructure
   };
   // load the plugin into jQuery
-  $.fn.scroll_control = function(method) {
+  $.fn.element_docker = function(method) {
     if (methods[method])
       return methods[method].apply( this, Array.prototype.slice.call( arguments, 1 ));
     else if ( typeof method === 'object' || ! method )
       return methods.init.apply( this, arguments );
-    else $.error( 'Method ' +  method + ' does not exist on jquery.scroll_control');
+    else $.error( 'Method ' +  method + ' does not exist on jquery.element_docker');
   };
 
   // as Kibbles widgets, we will generally want to set up default bindings
   // here 
 
   // $this.sticky();
+
+  function determine_opacity(debug) {
+    var $this = this; // Method invoked with 'call($this)'
+    var settings = this.data('element_docker');
+    var current_offset = $(window).scrollTop();
+    
+    if( current_offset<= settings.fadeStart ){
+      return 1;
+    } 
+    else if ( current_offset<= settings.fadeUntil ){
+      return 1 - (current_offset/settings.fadeUntil) * (1 - settings.min_opacity);
+    } 
+    else {
+      return settings.min_opacity;
+    }
+  };
 
 })(jQuery);
 
