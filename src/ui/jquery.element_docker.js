@@ -66,13 +66,13 @@
         instances.push($this);
         //alert("instances.length: " + instances.length);
 
-    $(window).bind('scroll', (function($this){
+    $(window).on('scroll', (function($this){
       return function() {
         $this.css('opacity', determine_opacity.call($this));
        };
     })($this));
 
-   $this.bind('mouseenter', (function($this){
+   $this.on('mouseenter', (function($this){
       return function() {
         count = count +1;
         //since there are possibly multiple elements on the page having element_docker applied, 
@@ -85,7 +85,7 @@
       };
     })($this));
 
-   $this.bind('mouseleave', (function($this){
+   $this.on('mouseleave', (function($this){
       return function() {
         count = count -1;
         //see mouseenter comment above. 
@@ -141,7 +141,7 @@
     var $this = this; // Method invoked with 'call($this)'
     var settings = this.data('element_docker');
     var current_offset = $(window).scrollTop();
-    
+
     if( current_offset<= settings.fadeStart ){
       return 1;
     } 
