@@ -111,7 +111,7 @@
     },
 
     //it would be cool if people could set the z-index on elements they are applying 
-    //the element_docker to. Why is the above plugin calling 'sticky'?
+    //the element_docker to. 
 
     destroy : function() {
       return this.each(function() {
