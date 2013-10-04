@@ -19,7 +19,7 @@
  *  <div class="subHeader"><span>Options</span></div>
  *  <div class="p">
  *   <ul> 
- *    <li> pin_target: (bind scroll event to the pin target, but the defaut is the window) select the containing element to pin the element_dockerled element to. Default value: body</li>
+ *    <li> pin_target: ( scroll event to the pin target, but the defaut is the window) select the containing element to pin the element_dockerled element to. Default value: body</li>
  *    <li> piadding_top: Accepts any CSS length value to indiciate padding from the top of the containing element. Default value: 0px </li>
  *    <li> fade_min: Minimum fade opacity as an decimal value between zero and one. Default value: 0.35 </li>
  *    <li> fade_travel: Fade rate is controlled by specifying the travel of element faded in pixels. Default value: 250</li>
@@ -93,7 +93,7 @@
           for (var i = 0; i < instances.length; i += 1)
           instances[i].css("opacity", determine_opacity.call(instances[i]));
         }
-    };
+      };
   })($this));
 
     $this.sticky(options);
@@ -102,13 +102,16 @@
         $("*").each(function() {
               // always use a radix when using parseInt
               var index_current = parseInt($(this).css("zIndex"), 10);
-              if(index_current > index_highest) {
+              if(index_current < index_highest) {
                 index_highest = index_current;
               }
             });  
           $this.css("z-index", index_highest +1);
       });
     },
+
+    //it would be cool if people could set the z-index on elements they are applying 
+    //the element_docker to. Why is the above plugin calling 'sticky'?
 
     destroy : function() {
       return this.each(function() {
