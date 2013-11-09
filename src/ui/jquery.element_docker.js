@@ -96,7 +96,8 @@
       };
   })($this));
 
-    $this.sticky(options);
+    $this.sticky(options).sticky('update');
+        $this.css('opacity', determine_opacity.call($this));
 
         var index_highest = 0;   
         $("*").each(function() {
